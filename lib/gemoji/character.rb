@@ -1,4 +1,4 @@
-module Emoji
+module Gemoji
   class Character
     # Inspect individual Unicode characters in a string by dumping its
     # codepoints in hexadecimal format.

@@ -5,8 +5,8 @@ require 'digest/md5'
 
 class IntegrityTest < TestCase
   test "images on disk correlate 1-1 with emojis" do
-    images_on_disk = Dir["#{Emoji.images_path}/**/*.png"].map {|f| f.sub(Emoji.images_path, '') }
-    expected_images = Emoji.all.map { |emoji| '/emoji/%s' % emoji.image_filename }
+    images_on_disk = Dir["#{Gemoji.images_path}/**/*.png"].map {|f| f.sub(Gemoji.images_path, '') }
+    expected_images = Gemoji.all.map { |emoji| '/emoji/%s' % emoji.image_filename }
 
     missing_images = expected_images - images_on_disk
     assert_equal 0, missing_images.size, "these images are missing on disk:\n  #{missing_images.join("\n  ")}\n"
@@ -17,8 +17,8 @@ class IntegrityTest < TestCase
 
   test "images on disk have no duplicates" do
     hashes = Hash.new { |h,k| h[k] = [] }
-    Emoji.all.each do |emoji|
-      checksum = Digest::MD5.file(File.join(Emoji.images_path, 'emoji', emoji.image_filename)).to_s
+    Gemoji.all.each do |emoji|
+      checksum = Digest::MD5.file(File.join(Gemoji.images_path, 'emoji', emoji.image_filename)).to_s
       hashes[checksum] << emoji
     end
 
@@ -33,11 +33,11 @@ class IntegrityTest < TestCase
 
   test "images on disk are 64x64" do
     mismatches = []
-    Dir["#{Emoji.images_path}/**/*.png"].each do |image_file|
+    Dir["#{Gemoji.images_path}/**/*.png"].each do |image_file|
       width, height = png_dimensions(image_file)
       unless width == 64 && height == 64
         mismatches << "%s: %dx%d" % [
-          image_file.sub(Emoji.images_path, ''),
+          image_file.sub(Gemoji.images_path, ''),
           width,
           height
         ]
@@ -47,7 +47,7 @@ class IntegrityTest < TestCase
   end
 
   test "missing or incorrect unicodes" do
-    missing = source_unicode_emoji - Emoji.all.flat_map(&:unicode_aliases)
+    missing = source_unicode_emoji - Gemoji.all.flat_map(&:unicode_aliases)
     assert_equal 0, missing.size, missing_unicodes_message(missing)
   end
 
@@ -55,11 +55,11 @@ class IntegrityTest < TestCase
     def missing_unicodes_message(missing)
       "Missing or incorrect unicodes:\n".tap do |message|
         missing.each do |raw|
-          emoji = Emoji::Character.new(nil)
+          emoji = Gemoji::Character.new(nil)
           emoji.add_unicode_alias(raw)
           message << "#{emoji.raw}  (#{emoji.hex_inspect})"
           codepoint = emoji.raw.codepoints[0]
-          if candidate = Emoji.all.detect { |e| !e.custom? && e.raw.codepoints[0] == codepoint }
+          if candidate = Gemoji.all.detect { |e| !e.custom? && e.raw.codepoints[0] == codepoint }
             message << " - might be #{candidate.raw}  (#{candidate.hex_inspect}) named #{candidate.name}"
           end
           message << "\n"

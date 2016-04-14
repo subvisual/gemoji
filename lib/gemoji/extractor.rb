@@ -2,7 +2,7 @@ require 'emoji'
 require 'ttfunk'
 require 'pathname'
 
-module Emoji
+module Gemoji
   class Extractor
     EMOJI_TTF = "/System/Library/Fonts/Apple Color Emoji.ttf"
 

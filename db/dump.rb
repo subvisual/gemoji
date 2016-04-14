@@ -52,9 +52,9 @@ end
 trap(:PIPE) { abort }
 
 items = []
-variation_codepoint = Emoji::VARIATION_SELECTOR_16.codepoints[0]
+variation_codepoint = Gemoji::VARIATION_SELECTOR_16.codepoints[0]
 
-for emoji in Emoji.all
+for emoji in Gemoji.all
   item = {}
 
   unless emoji.custom?
